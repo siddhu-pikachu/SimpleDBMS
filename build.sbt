@@ -7,6 +7,6 @@ lazy val root = (project in file("."))
     name := "SimpleDBMS"
   )
 
-libraryDependencies += "com.github.jsqlparser" % "jsqlparser" % "4.5"
+libraryDependencies += "com.github.jsqlparser" % "jsqlparser" % "4.4"
 
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.9" % Test
