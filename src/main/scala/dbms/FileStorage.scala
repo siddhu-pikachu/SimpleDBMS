@@ -3,33 +3,37 @@ package dbms
 import java.io._
 import scala.collection.mutable
 
-class FileStorage(filename: String){
+class FileStorage(filename: String, columns: Option[String]){
   private val PAGE_SIZE = 4096
-  private val NUM_PAGES = 10
-  private val file = new RandomAccessFile(filename, "rw")
-  private val tableName = "Employees"
-  private val table = new Table(file)
+  private val NUM_PAGES = 1
+  private val file : mutable.Map[Table, java.io.RandomAccessFile] = mutable.Map()
+  private val table : mutable.Map[String, Table] = mutable.Map()
 
   // Initialize the table
   initializeFile()
 
   private def initializeFile(): Unit = {
+    // create the table and its file
+    val tableName = filename.split('.')(0)
+    val tempFile = new RandomAccessFile(filename, "rw")
+    table += (filename -> Table(tempFile, tableName, NUM_PAGES, columns.getOrElse("")))
+    file += (table(filename) -> tempFile)
     // Set the file size to PAGE_SIZE * NUM_PAGES (4096 * 10 = 40960 bytes)
-    file.setLength(0);
-    file.setLength(PAGE_SIZE * NUM_PAGES)
+    file(table(filename)).setLength(0);
+    file(table(filename)).setLength(PAGE_SIZE * NUM_PAGES)
 
     // Overwrite the entire file with zeros to clear any previous data
     val emptyPage = new Array[Byte](PAGE_SIZE)
     for (pageNumber <- 0 until NUM_PAGES) {
-      file.seek(pageNumber * PAGE_SIZE)
-      file.write(emptyPage)
+      file(table(filename)).seek(pageNumber * PAGE_SIZE)
+      file(table(filename)).write(emptyPage)
     }
 
     // Initialize the table and its pages
-    table.initialize()
+      table(filename).initialize()
   }
-  
+
   def startCSVProcess(): Unit = {
-    table.processCsv(file)
+    table(filename).processCsv(file(table(filename)))
   }
 }

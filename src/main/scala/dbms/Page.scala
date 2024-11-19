@@ -8,7 +8,7 @@ import java.nio.ByteOrder
 import scala.collection.mutable
 
 class Page(file: RandomAccessFile, pageNumber: Int) {
-  private val PAGE_SIZE = 4096
+  private val PAGE_SIZE = 4096 
   private val RECORD_SIZE = 112
   private val HEADER_SIZE = 2 // Record count (short integer)
   private val MAX_RECORDS = (PAGE_SIZE - HEADER_SIZE) / (RECORD_SIZE + 2) // 2 bytes per offset
